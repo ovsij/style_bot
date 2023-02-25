@@ -12,7 +12,6 @@ from loader import bot, dp, Form
 from database.crud import *
 from database.models import *
 from keyboards.inline import *
-from keyboards.reply import *
 
 text1 = markdown.text(
     emojize(':star: Аутентичный стиль начинается с понимания себя, поэтому первая часть Системы Стиля была посвящена исследованию своей индивидуальности.', language='alias'),
@@ -47,11 +46,22 @@ text6 = markdown.text(
 )
 
 
-@dp.message_handler(content_types=types.ContentType.CONTACT)
+@dp.message_handler(lambda message: '@' in message.text)
 async def change_phone(message: types.Message):
     # проверяем, обработан ли пользователь
-    styles_list = ['Бохо', '60-е', 'Сафари']
-    #styles_list = []
+    gc = gspread.service_account('database/credentials.json')
+    gstable = gc.open_by_key(os.getenv('GS_KEY'))
+    try:
+        worksheet_style = gstable.worksheet("Результаты")
+        print('Connected to "Результаты"')
+    except:
+        print('Can\'t connect to "Результаты"')
+    styles_list = worksheet_style.get_all_values()[1][1].split(', ')
+
+    if worksheet_style.get_all_values()[1][0] != message.text:
+        await bot.send_message(message.from_user.id, text='Введенный email не найдет, попробуйте еще раз')
+        return 0
+    
     if styles_list:
         update_user(tg_id=str(message.from_user.id), styles_list=styles_list)
         for text in [text1, text2, text3, text4]:

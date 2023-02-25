@@ -1,30 +1,29 @@
 import asyncio
 from aiogram import types
+from aiogram.utils import markdown
 
 
 from loader import bot, dp
-from bot.keyboards.reply import reply_kb_start
 
 from database.crud import *
 from database.models import *
 
 @dp.message_handler(commands=['start'])
 async def bot_start(message: types.Message):
+    text = markdown.text(
+            f'{message.from_user.first_name}, добро пожаловать!', 
+            'Введите email, который вы указывали при заполнении анкеты, чтобы получить информацию о стилях',
+            sep='\n')
     if register_user(message.from_user):
-        text, reply_markup = reply_kb_start(message.from_user)
-
         await bot.send_message(
             message.from_user.id,
             text=text,
-            reply_markup=reply_markup
         )
     else:
         # заменить на pass
-        text, reply_markup = reply_kb_start(message.from_user)
         await bot.send_message(
             message.from_user.id,
             text=text,
-            reply_markup=reply_markup
         )
 
 @dp.message_handler(commands=['update'])
