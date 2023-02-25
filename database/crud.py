@@ -112,8 +112,11 @@ async def fill_tables():
     # Записываем таблицу Style
     gc = gspread.service_account('database/credentials.json')
     gstable = gc.open_by_key(os.getenv('GS_KEY'))
-    worksheet_style = gstable.worksheet("Стиль")
-    
+    try:
+        worksheet_style = gstable.worksheet("Стиль")
+        print('Connected to "Сообщения с описанием стилей"')
+    except:
+        print('Can\'t connect to "Сообщения с описанием стилей"')
     tasks = []
     for style in worksheet_style.get_all_values()[1:]:
         # Заполняем таблицу Style
@@ -124,7 +127,7 @@ async def fill_tables():
         counter = 1
         
         for image in style[2].strip().split('\n'):
-            # запись в бд
+            # запись в бд 
             path=f'database/image/{style[0]}_element_{counter}.jpeg'
             ElementImage(style=style_obj, link=path)
             commit()
@@ -141,7 +144,11 @@ async def fill_tables():
             counter +=1
         
     # Заполняем таблицу Message
-    worksheet_message = gstable.worksheet("Сообщения с описанием стилей")
+    try:
+        worksheet_message = gstable.worksheet("Сообщения с описанием стилей")
+        print('Connected to "Сообщения с описанием стилей"')
+    except:
+        print('Can\'t connect to "Сообщения с описанием стилей"')
     for message in worksheet_message.get_all_values()[1:]:
         message_obj = Message(style=Style.get(name=message[0]), text=message[1])
         commit()
@@ -157,7 +164,11 @@ async def fill_tables():
         else:
             continue
     # Заполняем таблицу Element
-    worksheet_elements = gstable.worksheet("Элементы эстетики")
+    try:
+        worksheet_elements = gstable.worksheet("Элементы эстетики")
+        print('Connected to "Элементы эстетики"')
+    except:
+        print('Can\'t connect to "Элементы эстетики"')
     for element in worksheet_elements.get_all_values()[1:]:
         Element(style=Style.get(name=element[3]), name=element[0], description=element[1], accents=element[2])
 
