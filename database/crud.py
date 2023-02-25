@@ -170,7 +170,6 @@ async def fill_tables():
     except:
         print('Can\'t connect to "Элементы эстетики"')
     for element in worksheet_elements.get_all_values()[1:]:
-        Element(style=Style.get(name=element[3]), name=element[0], description=element[1], accents=element[2])
-
+        element = Element(style=Style.get(name=element[3]), name=element[0], description=element[1], accents=element[2])
     return await asyncio.gather(*tasks)
     
