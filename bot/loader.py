@@ -15,3 +15,4 @@ class Form(StatesGroup):
     form_message = State()
     form_message1 = State()
     choose_styles = State()
+    button_message = State()

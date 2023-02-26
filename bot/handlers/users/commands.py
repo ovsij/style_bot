@@ -28,7 +28,12 @@ async def bot_start(message: types.Message):
 
 @dp.message_handler(commands=['update'])
 async def update_database(message: types.Message):
-    db.drop_all_tables(with_all_data=True)
+    db.drop_table('Style', with_all_data=True)
+    db.drop_table('Message', with_all_data=True)
+    db.drop_table('MessageImage', with_all_data=True)
+    db.drop_table('ElementImage', with_all_data=True)
+    db.drop_table('AccentImage', with_all_data=True)
+    db.drop_table('Element', with_all_data=True)
     db.create_tables()
     await bot.send_message(
         message.from_user.id,
@@ -42,3 +47,9 @@ async def update_database(message: types.Message):
         message.from_user.id,
         text='База данных успешно обновлена'
         )
+
+@dp.message_handler(commands=['refresh'])
+async def refresh_user(message: types.Message):
+    del_users()
+    register_user(message.from_user)
+    

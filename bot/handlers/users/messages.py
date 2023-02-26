@@ -34,20 +34,11 @@ text4 = markdown.text(
     'У вас будет возможность выбрать 2 из 3-х стилей, которые больше всех откликаются вам по эстетике и смыслам.',
     sep='\n\n'
 )
-text5 = markdown.text(
-    emojize(':point_right: Индивидуальный стиль состоит из сочетания элементов эстетики 2-х стилей, максимально отражающих вашу индивидуальность.', language='alias'),
-    'Выберите для себя 2 из 3-х стилей, которые больше всего откликаются вам по смыслам и эстетике. Пока не думайте о том, как именно воплотить стили в своем гардеробе, скоро у вас будут конкретные рекомендации и примеры.',
-    sep = '\n\n'
-)
-text6 = markdown.text(
-    emojize('На заметку :heart:', language = 'alias'),
-    'Качества и смыслы, которые составляют вашу индивидуальность, значимы не только в сфере стиля, но и во всех аспектах жизни, где вам важно осознавать и проявлять свою уникальность, например, в вашей деятельности. Чем больше вы следуете себе и чувствуете соответствие между внутренним и внешним, тем больше вы проявляете свою индивидуальную ценность в мир.',
-    sep = '\n\n'
-)
+
 
 
 @dp.message_handler(lambda message: '@' in message.text)
-async def change_phone(message: types.Message):
+async def start_process(message: types.Message):
     # проверяем, обработан ли пользователь
     gc = gspread.service_account('database/credentials.json')
     gstable = gc.open_by_key(os.getenv('GS_KEY'))
@@ -64,23 +55,28 @@ async def change_phone(message: types.Message):
     
     if styles_list:
         update_user(tg_id=str(message.from_user.id), styles_list=styles_list)
+        styles_list = get_user_styles(message.from_user.id)
         for text in [text1, text2, text3, text4]:
             await bot.send_message(message.from_user.id, text=text, reply_markup=types.ReplyKeyboardRemove())
             time.sleep(int(os.getenv('SLEEP')))
-        for style in styles_list:
-            await bot.send_message(message.from_user.id, text=emojize(f':yellow_heart: *{style.upper()}*', language='alias'), reply_markup=types.ReplyKeyboardRemove(), parse_mode='Markdown')
-            for msg in get_messages(style):
-                await bot.send_message(message.from_user.id, text=msg.text, reply_markup=types.ReplyKeyboardRemove())
-                time.sleep(int(os.getenv('SLEEP')))
-                images = get_message_imgs(msg)
-                media = [types.InputMedia(media=open(image.link, 'rb')) for image in images]
-                await bot.send_media_group(message.from_user.id, media=media) if media else 0
-                time.sleep(int(os.getenv('SLEEP')))
-        for text in [text5, text6]:
-            await bot.send_message(message.from_user.id, text=text)
+        # начало перечисления стилей
+        await bot.send_message(message.from_user.id, text=emojize(f':yellow_heart: *{styles_list[0].upper()}*', language='alias'), reply_markup=types.ReplyKeyboardRemove(), parse_mode='Markdown')
+        for msg in get_messages(styles_list[0]):
+            await bot.send_message(message.from_user.id, text=msg.text, reply_markup=types.ReplyKeyboardRemove())
             time.sleep(int(os.getenv('SLEEP')))
-        Form.form_message = await bot.send_poll(chat_id=message.from_user.id, question='Выберите два из предложенных стилей',
-									is_anonymous=False, options=styles_list, allows_multiple_answers=True)
+
+            images = get_message_imgs(msg)
+            media = [types.InputMedia(media=open(image.link, 'rb')) for image in images]
+            await bot.send_media_group(message.from_user.id, media=media) if media else 0
+            time.sleep(int(os.getenv('SLEEP')))
+        
+        
+        text_and_data = [['Дальше', f'next_style_1']]
+        schema = [1]
+        inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
+        Form.button_message = await bot.send_message(message.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+        
+        
     else:
         await bot.send_message(message.from_user.id, text='Ваша заявка находится в стадии обработки. Как только мы закончим анализировать вашу анкету, мы пришлем вам инструкции по дальнейшим шагам!', reply_markup=types.ReplyKeyboardRemove())
     

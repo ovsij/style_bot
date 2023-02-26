@@ -8,6 +8,7 @@ import os
 load_dotenv()
 
 from database.crud import *
+from keyboards.inline import *
 from loader import bot, dp, Form
 
 @dp.poll_answer_handler(lambda message: 'Выберите два из предложенных стилей' in Form.form_message.poll.question)
@@ -72,6 +73,7 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
                 text += emojize(f':yellow_heart: *{element.name}*\n', language='alias')
                 text += element.accents + '\n\n'
             await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
+            time.sleep(int(os.getenv('SLEEP')))
             images = get_accents_images(style)
             media = [types.InputMedia(media=open(image, 'rb')) for image in images]
             await bot.send_media_group(poll_answer.user.id, media=media) if media else 0
@@ -90,51 +92,10 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         await bot.send_message(poll_answer.user.id, text=text)
         time.sleep(int(os.getenv('SLEEP')))
 
-        text = markdown.text(
-            emojize(':star: Помимо акцентов вы можете использовать базовые вещи для дополнения образов на каждый день.', language='alias'),
-            emojize(':point_right: Старайтесь выбирать базу, которая максимально соответствует вашей формуле стиля.', language='alias'),
-            sep='\n\n')
-        await bot.send_message(poll_answer.user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP'))/2)
+        text_and_data = [['Дальше', f'next_base_1']]
+        schema = [1]
+        inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
+        Form.button_message = await bot.send_message(poll_answer.user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
 
-        for style in get_user_styles(tg_id=poll_answer.user.id):
-            text = emojize(f':yellow_heart: *Примеры базы для стиля {style}:*\n', language='alias')
-            text += get_style_base(style) + '\n\n'
-            await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-            time.sleep(int(os.getenv('SLEEP')))
-
-        text = markdown.text(
-            emojize(':star: Как воплотить свой аутентичный стиль:', language='alias'),
-            '*1. Собирайте образы вокруг своей формулы стиля, используя ее как чек-лист:\n*',
-            sep='\n\n')
-        for style in get_user_styles(tg_id=poll_answer.user.id):
-            for element in get_user_elements_by_style(tg_id=poll_answer.user.id, style=style):
-                text += f'• {element.name}\n'
-        text += emojize('\n:point_right: В образе должно быть что-то из каждого элемента. Одна вещь может воплощать в себе сразу несколько элементов. Например, блуза может быть одновременно нежной и расслабленной, или яркой и нарядной.', language='alias')
-        text += emojize('\n\n:point_right: Не бойтесь сочетать между собой противоположные элементы в вашей формуле стиля, именно контрасты создают яркий индивидуальный стиль. Например, если у вас есть элементы «женственность» и «мужская классика», вы можете надеть пиджак, сделав акцент с помощью пояса на талии.', language='alias')
-        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-        time.sleep(int(os.getenv('SLEEP')))
-
-        text = '*2. Дополняйте образ базовыми вещами, которые подходят к вашему стилю.*'
-        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-        time.sleep(int(os.getenv('SLEEP'))/2)
-
-        text = '*3. Для того чтобы легко собирать образы, переберите свой гардероб и посмотрите, что из того, что у вас есть, соответствует акцентам и базе вашего стиля.\n\n*'
-        text += emojize('Если вы сомневаетесь в чем-то, слушайте себя, индивидуальный стиль — это про ваше видение. Опирайтесь на свою формулу стиля и не бойтесь пробовать и экспериментировать :sparkles:', language='alias')
-        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-        time.sleep(int(os.getenv('SLEEP')))
-
-        text = markdown.text(
-            '*4. Когда вы разберёте свой гардероб, вы поймёте, каких элементов вашей формулы стиля и какой базы вам не хватает.*',
-            emojize(':point_right: Составьте список недостающих вещей для создания образов. Не обязательно покупать все сразу, можно периодически пополнять свой гардероб одной, двумя вещами.', language='alias'),
-            emojize(':point_right: Самый простой способ создавать свой стиль — использовать акцентные аксессуары, которые могут сделать даже базовый образ индивидуальным.', language='alias'),
-            sep='\n\n')
-        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-        time.sleep(int(os.getenv('SLEEP')))
-
-        text = markdown.text(
-            '*5. Система Аутентичного Стиля — это структура, которую вы можете наполнять тем, что максимально про вас.*', 
-            emojize('Пробуйте разные элементы своего индивидуального стиля, потребуется какое-то время, чтобы реализовать свой стиль в своем гардеробе. Опираясь на знания о своей индивидуальности и о том, как проявить ее вовне, можно делать целенаправленную работу, которая с каждым днём будет все больше приближать вас к вашему уникальному и узнаваемому стилю. :heart:', language='alias'),
-            sep='\n\n')
-        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
+        
 

@@ -104,7 +104,9 @@ def update_user(
     if elements_list:
         user_to_update.elements += [Element[el.id] for el in elements_list]
 
-
+@db_session
+def del_users():
+    return delete(u for u in User)
 
 
 @db_session
@@ -171,5 +173,6 @@ async def fill_tables():
         print('Can\'t connect to "Элементы эстетики"')
     for element in worksheet_elements.get_all_values()[1:]:
         element = Element(style=Style.get(name=element[3]), name=element[0], description=element[1], accents=element[2])
+        commit()
     return await asyncio.gather(*tasks)
     
