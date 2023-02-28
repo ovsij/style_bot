@@ -18,8 +18,8 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
         update_user(tg_id=poll_answer.user.id, styles_list=[styles_list[i] for i in poll_answer.option_ids])
         styles_list = get_user_styles(poll_answer.user.id)
-        await bot.send_message(poll_answer.user.id, text=emojize(':star: Каждый стиль создаётся с помощью своего набора узнаваемых элементов эстетики', language='alias'))
-        time.sleep(int(os.getenv('SLEEP'))/2)
+        await bot.send_message(poll_answer.user.id, text=emojize(':star: Каждый стиль создаётся с помощью своего набора узнаваемых элементов эстетики.', language='alias'))
+        time.sleep(int(os.getenv('SLEEP')))
         for style in styles_list:
             text = f'*Элементы стиля {style}:\n*'
             for element in get_styles_elements(style):
@@ -61,41 +61,28 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
     if check_elements(tg_id=poll_answer.user.id):
         text = 'Набор элементов эстетики ваших ключевых стилей — это ваша формула стиля. Вы можете использовать формулу как чек-лист при создании образов.'
         await bot.send_message(poll_answer.user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP'))/2)
+        time.sleep(int(os.getenv('SLEEP')))
 
         text = emojize(':star: Предметы одежды и аксессуаров, которые создают формулу стиля, называются акцентами, потому что они ответствены за индивидуальность и узнаваемость образа.', language='alias')
         await bot.send_message(poll_answer.user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP'))/2)
+        time.sleep(int(os.getenv('SLEEP')))
         
-        for style in get_user_styles(tg_id=poll_answer.user.id):
-            text = f'*{style.upper()}\n\n*'
-            for element in get_user_elements_by_style(poll_answer.user.id, style):
-                text += emojize(f':yellow_heart: *{element.name}*\n', language='alias')
-                text += element.accents + '\n\n'
-            await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
-            time.sleep(int(os.getenv('SLEEP')))
-            images = get_accents_images(style)
-            media = [types.InputMedia(media=open(image, 'rb')) for image in images]
-            await bot.send_media_group(poll_answer.user.id, media=media) if media else 0
-            time.sleep(int(os.getenv('SLEEP')))
-        
-        text = emojize(':point_right: Для создания образов в вашем стиле достаточно 1-го пункта из каждого элемента формулы стиля. На практике это несложно — 1 вещь или 1 аксессуар могут воплотить в себе сразу несколько пунктов.', language='alias')
-        await bot.send_message(poll_answer.user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP'))/2)
-
-        text = markdown.text(
-            emojize(':point_right: Если среди ваших акцентов есть противоречащие друг другу пункты, например яркие и пастельные цвета, это значит, что вам подходят оба варианта.', language='alias'),
-            'Цель — не использовать все свои акценты в образе, а постараться отразить каждый элемент своей формулы стиля.',
-            emojize('Именно уникальное сочетание элементов эстетики вашей формулы стиля будет создавать ваш аутентичный, узнаваемый стиль :sparkles:', language='alias'),
-            sep='\n\n'
-            )
-        await bot.send_message(poll_answer.user.id, text=text)
+        styles_list = get_user_styles(tg_id=poll_answer.user.id)
+        text = f'*{styles_list[0].upper()}\n\n*'
+        for element in get_user_elements_by_style(poll_answer.user.id, styles_list[0]):
+            text += emojize(f':yellow_heart: *{element.name}*\n', language='alias')
+            text += element.accents + '\n\n'
+        await bot.send_message(poll_answer.user.id, text=text, parse_mode="Markdown")
+        time.sleep(int(os.getenv('SLEEP')))
+        images = get_accents_images(styles_list[0])
+        media = [types.InputMedia(media=open(image, 'rb')) for image in images]
+        await bot.send_media_group(poll_answer.user.id, media=media) if media else 0
         time.sleep(int(os.getenv('SLEEP')))
 
-        text_and_data = [['Дальше', f'next_base_1']]
+        # далее
+        text_and_data = [['Дальше', f'next_element_1']]
         schema = [1]
         inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
         Form.button_message = await bot.send_message(poll_answer.user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
 
-        
 

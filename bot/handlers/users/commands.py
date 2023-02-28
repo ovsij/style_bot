@@ -14,17 +14,11 @@ async def bot_start(message: types.Message):
             f'{message.from_user.first_name}, добро пожаловать!', 
             'Введите email, который вы указывали при заполнении анкеты, чтобы получить информацию о стилях',
             sep='\n')
-    if register_user(message.from_user):
-        await bot.send_message(
-            message.from_user.id,
-            text=text,
-        )
-    else:
-        # заменить на pass
-        await bot.send_message(
-            message.from_user.id,
-            text=text,
-        )
+    register_user(message.from_user)
+    await bot.send_message(
+        message.from_user.id,
+        text=text,
+    )
 
 @dp.message_handler(commands=['update'])
 async def update_database(message: types.Message):
@@ -50,6 +44,5 @@ async def update_database(message: types.Message):
 
 @dp.message_handler(commands=['refresh'])
 async def refresh_user(message: types.Message):
-    del_users()
-    register_user(message.from_user)
+    del_user(message.from_user.id)
     

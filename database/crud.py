@@ -105,8 +105,8 @@ def update_user(
         user_to_update.elements += [Element[el.id] for el in elements_list]
 
 @db_session
-def del_users():
-    return delete(u for u in User)
+def del_user(tg_id : str):
+    return delete(u for u in User if u.tg_id == tg_id)
 
 
 @db_session

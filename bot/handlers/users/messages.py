@@ -41,17 +41,31 @@ text4 = markdown.text(
 async def start_process(message: types.Message):
     # проверяем, обработан ли пользователь
     gc = gspread.service_account('database/credentials.json')
-    gstable = gc.open_by_key(os.getenv('GS_KEY'))
+    gstable = gc.open_by_key(os.getenv('GS_RESULT_KEY'))
     try:
-        worksheet_style = gstable.worksheet("Результаты")
-        print('Connected to "Результаты"')
+        worksheet_style = gstable.worksheet("Foglio1")
+        print('Connected to "Foglio1"')
     except:
-        print('Can\'t connect to "Результаты"')
-    styles_list = worksheet_style.get_all_values()[1][1].split(', ')
+        print('Can\'t connect to "Foglio1"')
 
-    if worksheet_style.get_all_values()[1][0] != message.text:
-        await bot.send_message(message.from_user.id, text='Введенный email не найдет, попробуйте еще раз')
+    worksheet_values = worksheet_style.get_all_values()
+
+    if message.text.lower() not in [row[0].lower() for row in  worksheet_values]:
+        await bot.send_message(message.from_user.id, text='Введенный email не найден, попробуйте еще раз')
         return 0
+
+    for row in worksheet_values:
+        if message.text.lower() == row[0]:
+            if len(row[1]) < 1:
+                await bot.send_message(message.from_user.id, text=emojize('Кажется, вашу анкету еще не обработали. Попробуйте ввести свой email позже. \n\nЕсли проблема повторится - свяжитесь с нами, мы поможем ее решить :yellow_heart:', language='alias'))
+                return 0
+            elif row[2] == 'Активирован':
+                await bot.send_message(message.from_user.id, text='Для того чтобы воспользоваться услугой повторно, вы долны заново пройти процедуру анкетирования на сайте')
+                return 0
+            else:
+                styles_list=row[1].split(', ')
+                worksheet_style.update_cell(worksheet_values.index(row) + 1, 3, 'Активирован')
+
     
     if styles_list:
         update_user(tg_id=str(message.from_user.id), styles_list=styles_list)
