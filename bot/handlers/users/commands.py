@@ -26,7 +26,7 @@ async def bot_start(message: types.Message):
 
 @dp.message_handler(commands=['update'])
 async def update_database(message: types.Message):
-    if message.from_user.id in os.getenv('ADMINS'):
+    if str(message.from_user.id) in ['765765573', '227184505']:
         db.drop_table('Style', with_all_data=True)
         db.drop_table('Message', with_all_data=True)
         db.drop_table('MessageImage', with_all_data=True)
@@ -49,6 +49,6 @@ async def update_database(message: types.Message):
 
 @dp.message_handler(commands=['refresh'])
 async def refresh_user(message: types.Message):
-    if message.from_user.id in os.getenv('ADMINS'):
+    if str(message.from_user.id) in ['765765573', '227184505']:
         del_user(message.from_user.id)
     
