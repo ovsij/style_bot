@@ -46,7 +46,7 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
     elif len(poll_answer.option_ids) == 0:
         pass
     else:
-        await bot.send_message(poll_answer.user.id, text='Пожалуйста, выберите ДВА стиля. Зажмите сообщение с опросом и выберите "отменить голос", чтобы пепеголосовать.')
+        await bot.send_message(poll_answer.user.id, text='Пожалуйста, выберите ДВА стиля. Зажмите сообщение с опросом и выберите "отменить голос", чтобы переголосовать.')
 
 
 @dp.poll_answer_handler(lambda message: 'Выберите элементы стиля' in Form.form_message.poll.question)
