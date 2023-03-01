@@ -12,7 +12,7 @@ from database.models import *
 async def bot_start(message: types.Message):
     text = markdown.text(
             f'{message.from_user.first_name}, добро пожаловать!', 
-            'Введите email, который вы указывали при заполнении анкеты, чтобы получить информацию о стилях',
+            'Введите email, который вы указывали при заполнении анкеты, чтобы получить ваши результаты.',
             sep='\n')
     register_user(message.from_user)
     await bot.send_message(

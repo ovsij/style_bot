@@ -51,7 +51,7 @@ async def start_process(message: types.Message):
     worksheet_values = worksheet_style.get_all_values()
 
     if message.text.lower() not in [row[0].lower() for row in  worksheet_values]:
-        await bot.send_message(message.from_user.id, text='Введенный email не найден, попробуйте еще раз')
+        await bot.send_message(message.from_user.id, text='Введенный email не найден, попробуйте еще раз.')
         return 0
 
     for row in worksheet_values:
@@ -60,7 +60,14 @@ async def start_process(message: types.Message):
                 await bot.send_message(message.from_user.id, text=emojize('Кажется, вашу анкету еще не обработали. Попробуйте ввести свой email позже. \n\nЕсли проблема повторится - свяжитесь с нами, мы поможем ее решить :yellow_heart:', language='alias'))
                 return 0
             elif row[2] == 'Активирован':
-                await bot.send_message(message.from_user.id, text='Для того чтобы воспользоваться услугой повторно, вы долны заново пройти процедуру анкетирования на сайте')
+                text_and_data = [
+                    ['Перейти на сайт', 'http://systemofstyle.com'],
+                    ['Отправить сообщение', 'https://t.me/annamariagera']
+                    ]
+                schema = [1, 1]
+                button_type = ['url', 'url']
+                reply_markup = InlineConstructor.create_kb(text_and_data, schema, button_type)
+                await bot.send_message(message.from_user.id, text='Для того, чтобы повторно воспользоваться услугой, вам необходимо заново пройти Систему Стиля.', reply_markup=reply_markup)
                 return 0
             else:
                 styles_list=row[1].split(', ')

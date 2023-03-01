@@ -52,36 +52,43 @@ async def btn_callback(callback_query: types.CallbackQuery):
 									is_anonymous=False, options=list(styles_list), allows_multiple_answers=True)
     
     if 'element' in code:
-        styles_list = get_user_styles(tg_id=callback_query.from_user.id)
-        text = f'*{styles_list[1].upper()}\n\n*'
-        for element in get_user_elements_by_style(callback_query.from_user.id, styles_list[1]):
-            text += emojize(f':yellow_heart: *{element.name}*\n', language='alias')
-            text += element.accents + '\n\n'
-        await bot.send_message(callback_query.from_user.id, text=text, parse_mode="Markdown")
-        time.sleep(int(os.getenv('SLEEP')))
-        images = get_accents_images(styles_list[1])
-        media = [types.InputMedia(media=open(image, 'rb')) for image in images]
-        await bot.send_media_group(callback_query.from_user.id, media=media) if media else 0
-        time.sleep(int(os.getenv('SLEEP')))
+        if code.split('_')[-1] == '1':
+            styles_list = get_user_styles(tg_id=callback_query.from_user.id)
+            text = f'*{styles_list[1].upper()}\n\n*'
+            for element in get_user_elements_by_style(callback_query.from_user.id, styles_list[1]):
+                text += emojize(f':yellow_heart: *{element.name}*\n', language='alias')
+                text += element.accents + '\n\n'
+            await bot.send_message(callback_query.from_user.id, text=text, parse_mode="Markdown")
+            time.sleep(int(os.getenv('SLEEP')))
+            images = get_accents_images(styles_list[1])
+            media = [types.InputMedia(media=open(image, 'rb')) for image in images]
+            await bot.send_media_group(callback_query.from_user.id, media=media) if media else 0
+            time.sleep(int(os.getenv('SLEEP')))
 
-        
-        text = emojize(':point_right: Для создания образов в вашем стиле достаточно 1-го пункта из каждого элемента формулы стиля. На практике это несложно — 1 вещь или 1 аксессуар могут воплотить в себе сразу несколько пунктов.', language='alias')
-        await bot.send_message(callback_query.from_user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP')))
+            text_and_data = [['Дальше', f'next_element_2']]
+            schema = [1]
+            inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
+            Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
 
-        text = markdown.text(
-            emojize(':point_right: Если среди ваших акцентов есть противоречащие друг другу пункты, например яркие и пастельные цвета, это значит, что вам подходят оба варианта.', language='alias'),
-            'Цель — не использовать все свои акценты в образе, а постараться отразить каждый элемент своей формулы стиля.',
-            emojize('Именно уникальное сочетание элементов эстетики вашей формулы стиля будет создавать ваш аутентичный, узнаваемый стиль :sparkles:', language='alias'),
-            sep='\n\n'
-            )
-        await bot.send_message(callback_query.from_user.id, text=text)
-        time.sleep(int(os.getenv('SLEEP')))
 
-        text_and_data = [['Дальше', f'next_base_1']]
-        schema = [1]
-        inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-        Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+        else:
+            text = emojize(':point_right: Для создания образов в вашем стиле достаточно 1-го пункта из каждого элемента формулы стиля. На практике это несложно — 1 вещь или 1 аксессуар могут воплотить в себе сразу несколько пунктов.', language='alias')
+            await bot.send_message(callback_query.from_user.id, text=text)
+            time.sleep(int(os.getenv('SLEEP')))
+
+            text = markdown.text(
+                emojize(':point_right: Если среди ваших акцентов есть противоречащие друг другу пункты, например яркие и пастельные цвета, это значит, что вам подходят оба варианта.', language='alias'),
+                'Цель — не использовать все свои акценты в образе, а постараться отразить каждый элемент своей формулы стиля.',
+                emojize('Именно уникальное сочетание элементов эстетики вашей формулы стиля будет создавать ваш аутентичный, узнаваемый стиль :sparkles:', language='alias'),
+                sep='\n\n'
+                )
+            await bot.send_message(callback_query.from_user.id, text=text)
+            time.sleep(int(os.getenv('SLEEP')))
+
+            text_and_data = [['Дальше', f'next_base_1']]
+            schema = [1]
+            inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
+            Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
 
 
 
