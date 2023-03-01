@@ -1,6 +1,10 @@
 import asyncio
 from aiogram import types
 from aiogram.utils import markdown
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 from loader import bot, dp
@@ -22,27 +26,29 @@ async def bot_start(message: types.Message):
 
 @dp.message_handler(commands=['update'])
 async def update_database(message: types.Message):
-    db.drop_table('Style', with_all_data=True)
-    db.drop_table('Message', with_all_data=True)
-    db.drop_table('MessageImage', with_all_data=True)
-    db.drop_table('ElementImage', with_all_data=True)
-    db.drop_table('AccentImage', with_all_data=True)
-    db.drop_table('Element', with_all_data=True)
-    db.create_tables()
-    await bot.send_message(
-        message.from_user.id,
-        text='Запущен процесс обновления. Это может занять несколько минут.'
-        )
-    try:
-        await fill_tables()
-    except Exception as ex:
-        print(ex)
-    await bot.send_message(
-        message.from_user.id,
-        text='База данных успешно обновлена'
-        )
+    if message.from_user.id in os.getenv('ADMINS'):
+        db.drop_table('Style', with_all_data=True)
+        db.drop_table('Message', with_all_data=True)
+        db.drop_table('MessageImage', with_all_data=True)
+        db.drop_table('ElementImage', with_all_data=True)
+        db.drop_table('AccentImage', with_all_data=True)
+        db.drop_table('Element', with_all_data=True)
+        db.create_tables()
+        await bot.send_message(
+            message.from_user.id,
+            text='Запущен процесс обновления. Это может занять несколько минут.'
+            )
+        try:
+            await fill_tables()
+        except Exception as ex:
+            print(ex)
+        await bot.send_message(
+            message.from_user.id,
+            text='База данных успешно обновлена'
+            )
 
 @dp.message_handler(commands=['refresh'])
 async def refresh_user(message: types.Message):
-    del_user(message.from_user.id)
+    if message.from_user.id in os.getenv('ADMINS'):
+        del_user(message.from_user.id)
     
