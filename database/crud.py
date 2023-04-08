@@ -1,6 +1,7 @@
 import asyncio
 import gspread
 from dotenv import load_dotenv
+import logging
 import os
 
 load_dotenv()
@@ -19,7 +20,7 @@ def register_user(telegram_user):
         flush()
         return user
     else:
-        print(f'User {telegram_user.id} exists')
+        logging.info(f'User {telegram_user.id} exists')
 
 @db_session
 def get_user(telegram_user):
@@ -116,9 +117,9 @@ async def fill_tables():
     gstable = gc.open_by_key(os.getenv('GS_KEY'))
     try:
         worksheet_style = gstable.worksheet("Стиль")
-        print('Connected to "Сообщения с описанием стилей"')
+        logging.info('Connected to "Сообщения с описанием стилей"')
     except:
-        print('Can\'t connect to "Сообщения с описанием стилей"')
+        logging.info('Can\'t connect to "Сообщения с описанием стилей"')
     tasks = []
     for style in worksheet_style.get_all_values()[1:]:
         # Заполняем таблицу Style
@@ -148,9 +149,9 @@ async def fill_tables():
     # Заполняем таблицу Message
     try:
         worksheet_message = gstable.worksheet("Сообщения с описанием стилей")
-        print('Connected to "Сообщения с описанием стилей"')
+        logging.info('Connected to "Сообщения с описанием стилей"')
     except:
-        print('Can\'t connect to "Сообщения с описанием стилей"')
+        logging.info('Can\'t connect to "Сообщения с описанием стилей"')
     for message in worksheet_message.get_all_values()[1:]:
         message_obj = Message(style=Style.get(name=message[0]), text=message[1])
         commit()
@@ -168,9 +169,9 @@ async def fill_tables():
     # Заполняем таблицу Element
     try:
         worksheet_elements = gstable.worksheet("Элементы эстетики")
-        print('Connected to "Элементы эстетики"')
+        logging.info('Connected to "Элементы эстетики"')
     except:
-        print('Can\'t connect to "Элементы эстетики"')
+        logging.info('Can\'t connect to "Элементы эстетики"')
     for element in worksheet_elements.get_all_values()[1:]:
         element = Element(style=Style.get(name=element[3]), name=element[0], description=element[1], accents=element[2])
         commit()

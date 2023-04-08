@@ -41,7 +41,7 @@ async def update_database(message: types.Message):
         try:
             await fill_tables()
         except Exception as ex:
-            print(ex)
+            logging.warning(ex)
         await bot.send_message(
             message.from_user.id,
             text='База данных успешно обновлена'
