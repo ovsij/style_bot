@@ -44,9 +44,9 @@ async def start_process(message: types.Message):
     gstable = gc.open_by_key(os.getenv('GS_RESULT_KEY'))
     try:
         worksheet_style = gstable.worksheet("Foglio1")
-        logging.info('Connected to "Foglio1"')
+        print('Connected to "Foglio1"')
     except:
-        logging.info('Can\'t connect to "Foglio1"')
+        print('Can\'t connect to "Foglio1"')
 
     worksheet_values = worksheet_style.get_all_values()
 

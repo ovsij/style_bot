@@ -38,7 +38,7 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
             element_list = []
             for element in get_styles_elements(style):
                 element_list.append(element.name)
-            msg = await bot.send_poll(chat_id=poll_answer.user.id, question=f'Выберите элементы стиля {style} (можно оставить все)',
+            msg = await bot.send_poll(chat_id=poll_answer.user.id, question=f'Выберите элементы стиля «{style}» (можно оставить все)',
 									is_anonymous=False, options=element_list, allows_multiple_answers=True)
             forms.append(msg)
         Form.form_message = forms[0]
@@ -52,10 +52,16 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
 @dp.poll_answer_handler(lambda message: 'Выберите элементы стиля' in Form.form_message.poll.question)
 async def handle_poll_answer(poll_answer: types.PollAnswer):
     if poll_answer.poll_id == Form.form_message.poll.id:
-        elements_list = get_styles_elements(Form.form_message.poll.question.split(' (')[0].split(' ')[-1])
+        elements_list = get_styles_elements(Form.form_message.poll.question.split('«')[1].split('»')[0])
+        print('1')
+        print(Form.form_message.poll)
+        print(elements_list)
         await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
     if poll_answer.poll_id == Form.form_message1.poll.id:
-        elements_list = get_styles_elements(Form.form_message1.poll.question.split(' (')[0].split(' ')[-1])
+        elements_list = get_styles_elements(Form.form_message1.poll.question.split('«')[1].split('»')[0])
+        print('2')
+        print(Form.form_message1.poll)
+        print(elements_list)
         await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message1.message_id)
     update_user(tg_id=poll_answer.user.id, elements_list=[elements_list[i] for i in poll_answer.option_ids])
     if check_elements(tg_id=poll_answer.user.id):
