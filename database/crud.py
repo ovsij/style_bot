@@ -32,6 +32,7 @@ def get_users():
 
 @db_session
 def get_style(name : str):
+    print(Style.get(name=name))
     return Style.get(name=name)
 
 @db_session

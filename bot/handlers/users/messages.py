@@ -72,6 +72,7 @@ async def start_process(message: types.Message):
             else:
                 styles_list=row[1].split(', ')
                 worksheet_style.update_cell(worksheet_values.index(row) + 1, 3, 'Активирован')
+                print(styles_list)
 
     
     if styles_list:
