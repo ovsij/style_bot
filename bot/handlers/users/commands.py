@@ -49,6 +49,5 @@ async def update_database(message: types.Message):
 
 @dp.message_handler(commands=['refresh'])
 async def refresh_user(message: types.Message):
-    if str(message.from_user.id) in ['765765573', '227184505']:
-        del_user(message.from_user.id)
+    del_user(message.from_user.id)
     
