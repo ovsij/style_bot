@@ -50,4 +50,8 @@ async def update_database(message: types.Message):
 @dp.message_handler(commands=['refresh'])
 async def refresh_user(message: types.Message):
     del_user(message.from_user.id)
+    await bot.send_message(
+            message.from_user.id,
+            text='Ваши данные обновлены. Введите команду /start, чтобы начать заново.'
+            )
     
