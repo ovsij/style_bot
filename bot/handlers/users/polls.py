@@ -20,7 +20,9 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         except:
             pass
         update_user(tg_id=poll_answer.user.id, styles_list=[styles_list[i] for i in poll_answer.option_ids])
+        logging.info(f'Пользователь {poll_answer.user.id} Выбранные стили: {[styles_list[i] for i in poll_answer.option_ids]}')
         styles_list = get_user_styles(poll_answer.user.id)
+        logging.info(f'Пользователь {poll_answer.user.id} Стили из бд: {styles_list}')
         await bot.send_message(poll_answer.user.id, text=emojize(':star: Каждый стиль создаётся с помощью своего набора узнаваемых элементов эстетики.', language='alias'))
         time.sleep(int(os.getenv('SLEEP')))
         for style in styles_list:
@@ -59,6 +61,7 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         print('1')
         print(Form.form_message.poll)
         print(elements_list)
+        logging.info(f'Пользователь {poll_answer.user.id} Элементы 1 опрос: {elements_list}')
         try:
             await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
         except:
@@ -68,6 +71,7 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         print('2')
         print(Form.form_message1.poll)
         print(elements_list)
+        logging.info(f'Пользователь {poll_answer.user.id} Элементы 2 опрос: {elements_list}')
         try:
             await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message1.message_id)
         except:

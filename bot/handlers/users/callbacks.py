@@ -25,7 +25,7 @@ text6 = markdown.text(
 @dp.callback_query_handler(lambda c: c.data.startswith('next'))
 async def btn_callback(callback_query: types.CallbackQuery):
     code = callback_query.data
-    print(code)
+    logging.info(f'user {callback_query.from_user.id} open {code}')
     try:
         await bot.delete_message(chat_id=callback_query.from_user.id, message_id=Form.button_message.message_id)
     except:

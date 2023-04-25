@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.utils import markdown
 from emoji import emojize
+import logging
 import time
 from dotenv import load_dotenv
 import os
@@ -72,12 +73,13 @@ async def start_process(message: types.Message):
             else:
                 styles_list=row[1].split(', ')
                 worksheet_style.update_cell(worksheet_values.index(row) + 1, 3, 'Активирован')
-                print(styles_list)
+                logging.info(f'Пользователь {message.from_user.id}  Стили из гугл таблицы: {styles_list}')
 
     
     if styles_list:
         update_user(tg_id=str(message.from_user.id), styles_list=styles_list)
         styles_list = get_user_styles(message.from_user.id)
+        logging.info(f'Пользователь {message.from_user.id} Стили из базы данных: {styles_list}')
         for text in [text1, text2, text3, text4]:
             await bot.send_message(message.from_user.id, text=text, reply_markup=types.ReplyKeyboardRemove())
             time.sleep(int(os.getenv('SLEEP')))
