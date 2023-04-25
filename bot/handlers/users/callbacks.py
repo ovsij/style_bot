@@ -26,7 +26,10 @@ text6 = markdown.text(
 async def btn_callback(callback_query: types.CallbackQuery):
     code = callback_query.data
     print(code)
-    await bot.delete_message(chat_id=callback_query.from_user.id, message_id=Form.button_message.message_id)
+    try:
+        await bot.delete_message(chat_id=callback_query.from_user.id, message_id=Form.button_message.message_id)
+    except:
+        pass
     if 'style' in code:
         styles_list = get_user_styles(callback_query.from_user.id)
         await bot.send_message(callback_query.from_user.id, text=emojize(f':yellow_heart: *{styles_list[int(code.split("_")[-1])].upper()}*', language='alias'), reply_markup=types.ReplyKeyboardRemove(), parse_mode='Markdown')

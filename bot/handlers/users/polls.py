@@ -15,7 +15,10 @@ from loader import bot, dp, Form
 async def handle_poll_answer(poll_answer: types.PollAnswer):
     styles_list = [style['text'] for style in Form.form_message.poll.options]
     if len(poll_answer.option_ids) == 2:
-        await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
+        try:
+            await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
+        except:
+            pass
         update_user(tg_id=poll_answer.user.id, styles_list=[styles_list[i] for i in poll_answer.option_ids])
         styles_list = get_user_styles(poll_answer.user.id)
         await bot.send_message(poll_answer.user.id, text=emojize(':star: Каждый стиль создаётся с помощью своего набора узнаваемых элементов эстетики.', language='alias'))
@@ -56,13 +59,19 @@ async def handle_poll_answer(poll_answer: types.PollAnswer):
         print('1')
         print(Form.form_message.poll)
         print(elements_list)
-        await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
+        try:
+            await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message.message_id)
+        except:
+            pass
     if poll_answer.poll_id == Form.form_message1.poll.id:
         elements_list = get_styles_elements(Form.form_message1.poll.question.split('«')[1].split('»')[0])
         print('2')
         print(Form.form_message1.poll)
         print(elements_list)
-        await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message1.message_id)
+        try:
+            await bot.delete_message(chat_id=poll_answer.user.id, message_id=Form.form_message1.message_id)
+        except:
+            pass
     update_user(tg_id=poll_answer.user.id, elements_list=[elements_list[i] for i in poll_answer.option_ids])
     if check_elements(tg_id=poll_answer.user.id):
         text = 'Набор элементов эстетики ваших ключевых стилей — это ваша формула стиля. Вы можете использовать формулу как чек-лист при создании образов.'
