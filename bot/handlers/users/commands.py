@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 
-from loader import bot, dp
+from loader import bot, dp, Form
 
 from database.crud import *
 from database.models import *
@@ -54,4 +54,13 @@ async def refresh_user(message: types.Message):
             message.from_user.id,
             text='Ваши данные обновлены. Введите команду /start, чтобы начать заново.'
             )
+    
+
+@dp.message_handler(commands=['f'])
+async def refresh_user(message: types.Message):
+    print(Form.form_message)
+
+@dp.message_handler(commands=['fu'])
+async def refresh_user(message: types.Message):
+    print(Form.form_message[message.from_user.id])
     

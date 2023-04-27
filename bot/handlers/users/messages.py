@@ -98,8 +98,8 @@ async def start_process(message: types.Message):
         text_and_data = [['Дальше', f'next_style_1']]
         schema = [1]
         inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-        Form.button_message = await bot.send_message(message.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
-        
+        button_message = await bot.send_message(message.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+        update_user(tg_id=message.from_user.id, button_message=str(button_message.message_id))
         
     else:
         await bot.send_message(message.from_user.id, text='Ваша заявка находится в стадии обработки. Как только мы закончим анализировать вашу анкету, мы пришлем вам инструкции по дальнейшим шагам!', reply_markup=types.ReplyKeyboardRemove())

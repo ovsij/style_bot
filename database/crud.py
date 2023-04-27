@@ -30,6 +30,7 @@ def get_user(telegram_user):
 def get_users():
     return User.select(int(u.tg_id) for u in User)
 
+
 @db_session
 def get_style(name : str):
     print(Style.get(name=name))
@@ -54,7 +55,7 @@ def get_user_styles(tg_id : str):
     return select(s.name for s in Style if user in s.users)[:]
 
 @db_session
-def get_styles_elements(style : str):
+def get_styles_elements(style : Style):
     return select(el for el in Element if el.style == Style.get(name=style))[:]
 
 @db_session
@@ -91,7 +92,12 @@ def update_user(
     first_name : str = None,
     last_name : str = None,
     styles_list : list = None,
-    elements_list : list = None
+    elements_list : list = None,
+    form_styles : str = None, 
+    form_elements1 : str = None, 
+    form_elements2 : str = None, 
+    button_message : str = None,
+    poll_question : str = None
     ):
 
     user_to_update = User.get(tg_id = tg_id)
@@ -105,6 +111,16 @@ def update_user(
         user_to_update.styles = [get_style(name) for name in styles_list]
     if elements_list:
         user_to_update.elements += [Element[el.id] for el in elements_list]
+    if form_styles:
+        user_to_update.form_styles = form_styles
+    if form_elements1:
+        user_to_update.form_elements1 = form_elements1
+    if form_elements2:
+        user_to_update.form_elements2 = form_elements2
+    if button_message:
+        user_to_update.button_message = button_message
+    if poll_question:
+        user_to_update.poll_question = poll_question
 
 @db_session
 def del_user(tg_id : str):

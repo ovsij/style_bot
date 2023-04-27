@@ -14,6 +14,11 @@ class User(db.Entity):
     was_registered = Optional(datetime, default=lambda: datetime.now())
     styles = Set('Style')
     elements = Set('Element')
+    form_styles = Optional(str, nullable=True)
+    form_elements1 = Optional(str, nullable=True)
+    form_elements2 = Optional(str, nullable=True)
+    button_message = Optional(str, nullable=True)
+    poll_question = Optional(str, nullable=True)
 
 
 class Style(db.Entity):

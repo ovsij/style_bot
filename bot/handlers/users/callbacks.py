@@ -27,7 +27,7 @@ async def btn_callback(callback_query: types.CallbackQuery):
     code = callback_query.data
     logging.info(f'user {callback_query.from_user.id} open {code}')
     try:
-        await bot.delete_message(chat_id=callback_query.from_user.id, message_id=Form.button_message.message_id)
+        await bot.delete_message(chat_id=callback_query.from_user.id, message_id=get_user(callback_query.from_user).button_message)
     except:
         pass
     if 'style' in code:
@@ -46,13 +46,16 @@ async def btn_callback(callback_query: types.CallbackQuery):
             text_and_data = [['Дальше', f'next_style_2']]
             schema = [1]
             inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-            Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+            button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+            update_user(tg_id=callback_query.from_user.id, button_message=str(button_message.message_id))
         else:
+            # отправляем форму с выбором 2х стилей
             for text in [text5, text6]:
                 await bot.send_message(callback_query.from_user.id, text=text)
                 time.sleep(int(os.getenv('SLEEP')))
-            Form.form_message = await bot.send_poll(chat_id=callback_query.from_user.id, question='Выберите два из предложенных стилей',
+            form_styles = await bot.send_poll(chat_id=callback_query.from_user.id, question='Выберите два из предложенных стилей',
 									is_anonymous=False, options=list(styles_list), allows_multiple_answers=True)
+            update_user(tg_id=callback_query.from_user.id, button_message=str(form_styles.message_id), poll_question='Стили')
     
     if 'element' in code:
         if code.split('_')[-1] == '1':
@@ -71,8 +74,8 @@ async def btn_callback(callback_query: types.CallbackQuery):
             text_and_data = [['Дальше', f'next_element_2']]
             schema = [1]
             inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-            Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
-
+            button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+            update_user(tg_id=callback_query.from_user.id, button_message=str(button_message.message_id))
 
         else:
             text = emojize(':point_right: Для создания образов в вашем стиле достаточно 1-го пункта из каждого элемента формулы стиля. На практике это несложно — 1 вещь или 1 аксессуар могут воплотить в себе сразу несколько пунктов.', language='alias')
@@ -91,8 +94,8 @@ async def btn_callback(callback_query: types.CallbackQuery):
             text_and_data = [['Дальше', f'next_base_1']]
             schema = [1]
             inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-            Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
-
+            button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+            update_user(tg_id=callback_query.from_user.id, button_message=str(button_message.message_id))
 
 
     if 'base' in code:
@@ -112,7 +115,8 @@ async def btn_callback(callback_query: types.CallbackQuery):
         text_and_data = [['Дальше', f'next_final_1']]
         schema = [1]
         inline_kb_next = InlineConstructor.create_kb(text_and_data, schema)
-        Form.button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+        button_message = await bot.send_message(callback_query.from_user.id, text='Нажмите, чтобы продолжить', reply_markup=inline_kb_next)
+        update_user(tg_id=callback_query.from_user.id, button_message=str(button_message.message_id))
 
     if 'final' in code:
         text = markdown.text(
